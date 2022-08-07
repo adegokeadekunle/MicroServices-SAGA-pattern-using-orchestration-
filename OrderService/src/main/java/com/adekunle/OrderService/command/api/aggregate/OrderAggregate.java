@@ -1,10 +1,11 @@
 package com.adekunle.OrderService.command.api.aggregate;
 
+import com.adekunle.CommonService.commands.CompleteOrderCommand;
+import com.adekunle.CommonService.events.OrderCompletedEvent;
 import com.adekunle.OrderService.command.api.command.CreateOrderCommand;
 import com.adekunle.OrderService.command.api.enums.OrderStatus;
 import com.adekunle.OrderService.command.api.events.OrderCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
@@ -42,6 +43,18 @@ public class OrderAggregate {
         this.userId = orderCreatedEvent.getUserId();
         this.quantity = orderCreatedEvent.getQuantity();
         this.orderStatus = orderCreatedEvent.getOrderStatus();
+
+    }
+
+    @CommandHandler
+    public void handle(CompleteOrderCommand completeOrderCommand){
+        // validate the command
+        //publish order completed event
+        OrderCompletedEvent orderCompletedEvent = OrderCompletedEvent.builder()
+                .orderId(completeOrderCommand.getOrderId())
+                .orderStatus(completeOrderCommand.getOrderStatus())
+                .build();
+        AggregateLifecycle.apply(orderCompletedEvent);
 
     }
 

@@ -1,4 +1,4 @@
-package com.adekunle.OrderService.command.api.enums;
+package com.adekunle.CommonService.enums;
 
 public enum OrderStatus {
     CREATED,APPROVED,DECLINED

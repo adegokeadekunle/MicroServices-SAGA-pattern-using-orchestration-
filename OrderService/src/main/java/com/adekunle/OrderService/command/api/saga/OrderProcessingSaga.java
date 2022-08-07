@@ -1,6 +1,11 @@
 package com.adekunle.OrderService.command.api.saga;
 
-import com.adekunle.CommonService.commons.ValidatePaymentCommand;
+import com.adekunle.CommonService.commands.CompleteOrderCommand;
+import com.adekunle.CommonService.commands.ShipOrderCommand;
+import com.adekunle.CommonService.commands.ValidatePaymentCommand;
+import com.adekunle.CommonService.enums.OrderStatus;
+import com.adekunle.CommonService.events.OrderShippedEvent;
+import com.adekunle.CommonService.events.PaymentProcessedEvent;
 import com.adekunle.CommonService.model.User;
 import com.adekunle.CommonService.querries.GetUserPaymentQuery;
 import com.adekunle.OrderService.command.api.events.OrderCreatedEvent;
@@ -12,6 +17,8 @@ import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.spring.stereotype.Saga;
+
+import java.util.UUID;
 
 @Saga
 @Slf4j
@@ -27,24 +34,45 @@ public class OrderProcessingSaga {
         log.info("OrderCreatedEvent in saga for order id : {}",orderCreatedEvent.getOrderId());
 
         GetUserPaymentQuery getUserPaymentQuery = new GetUserPaymentQuery(orderCreatedEvent.getUserId());
-
         User user = null;
-
         try{
             user = queryGateway.query(getUserPaymentQuery, ResponseTypes.instanceOf(User.class)).join();
         }catch (Exception e) {
             log.error(e.getMessage());
         }
-
         ValidatePaymentCommand validatePaymentCommand = ValidatePaymentCommand.builder()
-                .PaymentId(orderCreatedEvent.getProductId())
                 .orderId(orderCreatedEvent.getOrderId())
                 .cardDetails(user.getCardDetails())
+                .PaymentId(UUID.randomUUID().toString())
                 .build();
-        
         commandGateway.sendAndWait(validatePaymentCommand);
+    }
 
+    @SagaEventHandler(associationProperty = "orderId")
+    private void handle(PaymentProcessedEvent event){
+        log.info("PaymentProcessed event in Saga for order id: {}",event.getOrderId());
 
+        try {
+            ShipOrderCommand shipOrderCommand = ShipOrderCommand.builder()
+                    .shipmentId(UUID.randomUUID().toString())
+                    .orderId(event.getOrderId())
+                    .build();
+            commandGateway.send(shipOrderCommand);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage());
+            // if error occurs , start a compensating transaction to roll back the events
+        }
+    }
+    @SagaEventHandler(associationProperty = "orderId")
+    public void handle(OrderShippedEvent event){
+        log.info("Order Shipped Event in saga for Order id : {}",event.getOrderId());
+
+        CompleteOrderCommand completeOrderCommand = CompleteOrderCommand.builder()
+                .OrderId(event.getOrderId())
+                .orderStatus(OrderStatus.APPROVED)
+                .build();
+        commandGateway.send(completeOrderCommand);
     }
 
 }
