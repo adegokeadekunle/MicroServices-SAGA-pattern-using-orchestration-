@@ -1,7 +1,6 @@
 package com.adekunle.OrderService.command.api.command;
 
 
-import com.adekunle.OrderService.command.api.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Data;
 

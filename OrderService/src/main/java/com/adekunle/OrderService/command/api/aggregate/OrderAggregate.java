@@ -1,9 +1,9 @@
 package com.adekunle.OrderService.command.api.aggregate;
 
 import com.adekunle.CommonService.commands.CompleteOrderCommand;
+import com.adekunle.CommonService.enums.OrderStatus;
 import com.adekunle.CommonService.events.OrderCompletedEvent;
 import com.adekunle.OrderService.command.api.command.CreateOrderCommand;
-import com.adekunle.OrderService.command.api.enums.OrderStatus;
 import com.adekunle.OrderService.command.api.events.OrderCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -55,8 +55,12 @@ public class OrderAggregate {
                 .orderStatus(completeOrderCommand.getOrderStatus())
                 .build();
         AggregateLifecycle.apply(orderCompletedEvent);
-
     }
 
+    @EventSourcingHandler
+    public void on(OrderCompletedEvent event) {
+        this.orderStatus = event.getOrderStatus();
+
+    }
 
 }

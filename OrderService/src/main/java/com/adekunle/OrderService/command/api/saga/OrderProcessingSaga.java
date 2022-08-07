@@ -4,6 +4,7 @@ import com.adekunle.CommonService.commands.CompleteOrderCommand;
 import com.adekunle.CommonService.commands.ShipOrderCommand;
 import com.adekunle.CommonService.commands.ValidatePaymentCommand;
 import com.adekunle.CommonService.enums.OrderStatus;
+import com.adekunle.CommonService.events.OrderCompletedEvent;
 import com.adekunle.CommonService.events.OrderShippedEvent;
 import com.adekunle.CommonService.events.PaymentProcessedEvent;
 import com.adekunle.CommonService.model.User;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryGateway;
@@ -75,4 +77,10 @@ public class OrderProcessingSaga {
         commandGateway.send(completeOrderCommand);
     }
 
+    @SagaEventHandler(associationProperty = "orderId")
+    @EndSaga
+    public void handle(OrderCompletedEvent event){
+        log.info("OrderCompletedEvent in Saga for Order id : {}",event.getOrderId());
+
+    }
 }

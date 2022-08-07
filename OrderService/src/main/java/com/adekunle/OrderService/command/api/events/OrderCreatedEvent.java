@@ -1,6 +1,6 @@
 package com.adekunle.OrderService.command.api.events;
 
-import com.adekunle.OrderService.command.api.enums.OrderStatus;
+import com.adekunle.CommonService.enums.OrderStatus;
 import lombok.Data;
 
 @Data
