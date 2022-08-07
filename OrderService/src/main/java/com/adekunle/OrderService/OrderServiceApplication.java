@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-//@SpringBootApplication
-@SpringBootConfiguration
-@ComponentScan
+@SpringBootApplication
+//@SpringBootConfiguration
+//@ComponentScan
 public class OrderServiceApplication {
 
 	public static void main(String[] args) {

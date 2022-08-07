@@ -20,7 +20,7 @@
       <module name="microservicesSAGA" target="11" />
       <module name="OrderService" target="17" />
       <module name="PaymentService" target="17" />
-      <module name="ProductService" target="17" />
+      <module name="ProductService" target="11" />
       <module name="ShipmentService" target="17" />
       <module name="UserService" target="17" />
     </bytecodeTargetLevel>

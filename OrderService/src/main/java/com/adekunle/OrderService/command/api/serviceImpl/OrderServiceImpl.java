@@ -1,5 +1,6 @@
 package com.adekunle.OrderService.command.api.serviceImpl;
 
+import com.adekunle.CommonService.enums.OrderStatus;
 import com.adekunle.OrderService.command.api.command.CreateOrderCommand;
 import com.adekunle.OrderService.command.api.model.OrderRestModel;
 import lombok.RequiredArgsConstructor;
